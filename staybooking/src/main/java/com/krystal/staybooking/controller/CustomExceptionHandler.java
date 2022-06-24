@@ -1,4 +1,5 @@
 package com.krystal.staybooking.controller;
+import com.krystal.staybooking.exception.GCSUploadException;
 import com.krystal.staybooking.exception.StayNotExistException;
 import com.krystal.staybooking.exception.UserAlreadyExistException;
 import com.krystal.staybooking.exception.UserNotExistException;
@@ -28,5 +29,9 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(GCSUploadException.class)
+    public final ResponseEntity<String> handleGCSUploadExceptions(Exception ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
 }

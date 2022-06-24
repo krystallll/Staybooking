@@ -4,7 +4,8 @@ import com.krystal.staybooking.model.Stay;
 import com.krystal.staybooking.service.StayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
+import com.krystal.staybooking.model.User;
 
 import java.util.List;
 
@@ -31,11 +32,24 @@ public class StayController {
 
     //add
     @PostMapping("/stays")
-    public void addStay(@RequestBody Stay stay) {
-        stayService.add(stay);
+    public void addStay(
+            @RequestParam("name") String name,
+            @RequestParam("address") String address,
+            @RequestParam("description") String description,
+            @RequestParam("host") String host,
+            @RequestParam("guest_number") int guestNumber,
+            @RequestParam("images") MultipartFile[] images) {
+
+        Stay stay = new Stay.Builder().setName(name)
+                .setAddress(address)
+                .setDescription(description)
+                .setGuestNumber(guestNumber)
+                .setHost(new User.Builder().setUsername(host).build())
+                .build();
+        stayService.add(stay, images);
     }
 
-    //delete
+        //delete
     @DeleteMapping("/stays")
     public void deleteStay(
             @RequestParam(name = "stay_id") Long stayId,
