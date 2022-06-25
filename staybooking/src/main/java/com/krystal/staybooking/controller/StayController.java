@@ -24,7 +24,7 @@ public class StayController {
         return stayService.listByUser(principal.getName());
     }
 
-    @GetMapping(value = "/stays/{stayId}")
+    @GetMapping(value = "/stays/{stayId}")  //principal是filter之后产生的 看图
     public Stay getStay(@PathVariable Long stayId, Principal principal) {
         return stayService.findByIdAndHost(stayId, principal.getName());
     }
