@@ -33,7 +33,6 @@ public class ImageStorageService {
                     BlobInfo
                             .newBuilder(bucketName, filename)
                             .setContentType("image/jpeg")
-                            .setContentType("image/heic")
                             .setAcl(new ArrayList<>(Arrays.asList(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER))))
                             .build(),
                     file.getInputStream());

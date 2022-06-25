@@ -1,9 +1,11 @@
 package com.krystal.staybooking.config;
 
+import com.krystal.staybooking.filter.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.http.HttpMethod;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import javax.sql.DataSource;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 //加密信息
@@ -21,6 +24,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     //springboot自己创建 类似database的driver
     @Autowired
     private DataSource dataSource;
+
+    @Autowired
+    private JwtFilter jwtFilter;
 
     @Bean
     //自动encryption
@@ -35,12 +41,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/register/*").permitAll()
                 .antMatchers(HttpMethod.POST, "/authenticate/*").permitAll()
-                .antMatchers("/stays").permitAll()
-                .antMatchers("/stays/*").permitAll()
+                .antMatchers("/stays").hasAuthority("ROLE_HOST")
+                .antMatchers("/stays/*").hasAuthority("ROLE_HOST")
                 .anyRequest().authenticated()
                 .and()
                 .csrf()
                 .disable();
+        http
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) //加上参数 默认通过token
+                .and()
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); //自己的filter加上就完成了
+
     }
 
     //两个query：自己找到数据去匹配
