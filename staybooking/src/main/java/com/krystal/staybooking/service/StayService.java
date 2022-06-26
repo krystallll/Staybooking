@@ -1,5 +1,6 @@
 package com.krystal.staybooking.service;
 import com.krystal.staybooking.exception.StayNotExistException;
+import com.krystal.staybooking.repository.LocationRepository;
 import org.springframework.stereotype.Service;
 import com.krystal.staybooking.repository.StayRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,16 @@ public class StayService {
 
     private ImageStorageService imageStorageService;
 
+    private LocationRepository locationRepository;
+
+    private GeoCodingService geoCodingService;
+
     @Autowired
-    public StayService(StayRepository stayRepository, ImageStorageService imageStorageService) {
+    public StayService(StayRepository stayRepository, ImageStorageService imageStorageService, LocationRepository locationRepository, GeoCodingService geoCodingService) {
         this.stayRepository = stayRepository;
         this.imageStorageService = imageStorageService;
+        this.locationRepository = locationRepository;
+        this.geoCodingService = geoCodingService;
     }
 
     public List<Stay> listByUser(String username) {
@@ -50,6 +57,11 @@ public class StayService {
         }
         stay.setImages(stayImages);
         stayRepository.save(stay);
+
+        //既存在了mysql下 也存到了elastic search底下
+        Location location = geoCodingService.getLatLng(stay.getId(), stay.getAddress());
+        locationRepository.save(location);
+
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
