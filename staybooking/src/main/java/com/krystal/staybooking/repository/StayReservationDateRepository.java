@@ -1,5 +1,6 @@
 package com.krystal.staybooking.repository;
 
+import com.krystal.staybooking.model.Stay;
 import com.krystal.staybooking.model.StayReservedDate;
 import com.krystal.staybooking.model.StayReservedDateKey;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,9 @@ public interface StayReservationDateRepository extends JpaRepository<StayReserve
     @Query(value = "SELECT srd.id.stay_id FROM StayReservedDate srd WHERE srd.id.stay_id IN ?1 AND srd.id.date BETWEEN ?2 AND ?3 GROUP BY srd.id.stay_id")
     //把reserved的房子搜索出来 和elastic search的结果做差集
     Set<Long> findByIdInAndDateBetween(List<Long> stayIds, LocalDate startDate, LocalDate endDate);
+
+    List<StayReservedDate> findByStay(Stay stay);
+
+
+
 }
